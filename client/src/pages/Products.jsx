@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -6,20 +6,23 @@ import ProductCardCustomer from "../components/customerComponents/ProductCardCus
 import ProductCardSeller from "../components/sellerComponents/ProductCardSeller.jsx";
 import AddNewProduct from "../components/sellerComponents/AddNewProduct.jsx";
 import UpdateProduct from "../components/sellerComponents/UpdateProduct.jsx";
+import { debounce } from "lodash"; // Import lodash debounce
 
-const Products = ({user }) => {
+const Products = ({ user }) => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
 
-  // Retrieve user data from localStorage and set it as user information
-  console.log("user is product:",user)
+  console.log("user is product:", user);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/products");
         setProducts(response.data);
+        setFilteredProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -27,6 +30,16 @@ const Products = ({user }) => {
 
     fetchProducts();
   }, []);
+
+  const handleSearch = useMemo(() =>
+    debounce((query) => {
+      setSearchText(query);
+      const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }, 300), [products]
+  );
 
   const handleDeleteProduct = async (id) => {
     try {
@@ -54,21 +67,44 @@ const Products = ({user }) => {
     document.getElementById("update_modal").showModal();
   };
 
+  const highlightText = (text, highlight) => {
+    if (!highlight) return text;
+    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} className="bg-yellow-200">{part}</span>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Products</h1>
+      <span className="text-lg font-bold text-blue-400">Search</span>
+      <input
+        type="text"
+        placeholder="Search products..."
+        onChange={(e) => handleSearch(e.target.value)}
+        className="p-2 mb-4 border border-gray-300 rounded"
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((product) =>
-          (user.role !== "admin") ? (
+        {filteredProducts.map((product) =>
+          user.role !== "admin" ? (
             user.role === "seller" ? (
               <ProductCardSeller
                 key={product._id}
                 product={product}
                 handleUpdateProduct={openUpdateModal}
                 handleDeleteProduct={handleDeleteProduct}
-              />
+              >
+                {highlightText(product.name, searchText)}
+              </ProductCardSeller>
             ) : (
-              <ProductCardCustomer key={product._id} product={product} user={user} />
+              <ProductCardCustomer key={product._id} product={product} user={user}>
+                {highlightText(product.name, searchText)}
+              </ProductCardCustomer>
             )
           ) : (
             <ProductCardCustomer
@@ -76,7 +112,9 @@ const Products = ({user }) => {
               product={product}
               user={user}
               navigate={navigate}
-            />
+            >
+              {highlightText(product.name, searchText)}
+            </ProductCardCustomer>
           )
         )}
       </div>

@@ -17,7 +17,6 @@ const LoginController = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(400).json({ error: "Invalid email or password" });
         }
-        console.log(user)
 
         const token = jwt.sign({ id: user._id,name:user.username,email: user.email, role: user.role }, "your_jwt_secret", { expiresIn: "1h" });
         
