@@ -15,7 +15,7 @@ mongoose.connect("mongodb://localhost:27017/ecommerce", {
     useUnifiedTopology: true,
 });
 
-app.post("/api/register/:role", UserController);
+app.post("/api/register", UserController);
 app.post("/api/login", LoginController);
 app.use("/api/products", ProductRouter);
 app.use("/api/cart", CartRouter);

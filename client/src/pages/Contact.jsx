@@ -5,7 +5,7 @@ import { faFacebook, faTwitter, faInstagram } from '@fortawesome/free-brands-svg
 
 const Contact = () => {
   return (
-    <div className="container mx-auto p-4 my-10">
+    <div className="container lg:w-[1400px] md:w-[768px] sm:w-[640px] mx-auto p-4 my-10">
       <h1 className="text-3xl font-bold mb-8 text-center">Contact Us</h1>
       <div className="flex flex-wrap justify-center">
         <div className="w-full md:w-1/2 p-4">
@@ -33,7 +33,7 @@ const Contact = () => {
           </div>
         </div>
         <div className="w-full md:w-1/2 p-4">
-          <img src="https://via.placeholder.com/400" alt="Office" className="rounded-lg shadow-md" />
+          <img src="https://talent.davies-group.com/wp-content/uploads/2023/05/United-Utilities-Keeping-customers-at-the-heart.jpg" alt="Office" className="rounded-lg shadow-md" />
         </div>
       </div>
     </div>

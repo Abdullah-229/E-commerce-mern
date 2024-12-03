@@ -6,8 +6,9 @@ const { registrationSchema, User } = require('./userModel');
 const UserController = async (req, res) => {
     try {
         const validatedData = registrationSchema.parse(req.body);
-        const { username, email, password } = validatedData;
-        const { role } = req.params;
+        console.log(req.body);
+        const { username, email, password,role } = validatedData;
+        // const { role } = req.params;
 
         if (!['customer', 'seller', 'admin'].includes(role)) {
             return res.status(400).json({ error: 'Invalid role' });
@@ -22,9 +23,10 @@ const UserController = async (req, res) => {
         const newUser = new User({ username, email, password: hashedPassword, role });
         await newUser.save();
 
-        const token = jwt.sign({ id: newUser._id, role: newUser.role }, 'your_jwt_secret', { expiresIn: '1h' });
+        // Corrected here
+        const token = jwt.sign({ id: newUser._id, name: newUser.username, email: newUser.email, role: newUser.role }, 'your_jwt_secret', { expiresIn: '1h' });
 
-        res.status(201).json({ message: 'User registered successfully', token, role });
+        res.status(201).json({ message: 'User registered successfully', token });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ errors: error.errors });

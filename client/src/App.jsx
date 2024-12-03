@@ -16,8 +16,6 @@ const App = () => {
     role: ''
   });
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -53,12 +51,12 @@ const App = () => {
         {
           path: "/register/customer",
           element: (
-            <RegistrationForm/>
+            <RegistrationForm setUser={setUser}/>
           ),
         },
         {
           path: "/login",
-          element: <LoginForm/>,
+          element: <LoginForm setUser={setUser}/>,
         },
         {
           path: "/products",
