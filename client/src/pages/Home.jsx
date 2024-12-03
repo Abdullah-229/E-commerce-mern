@@ -3,25 +3,36 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Products from "./Products"; // Import the Products component
 import { Outlet, useLocation } from "react-router-dom";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import HeroSection from "../components/sellerComponents/HeroSection";
+import AdminUserHome from "../components/AdminComponents/AdminUserHome";
 
 const Home = ({ user, handleLogout }) => {
   const location = useLocation();
 
   return (
-    <div >
+    <div>
       <Navbar user={user} handleLogout={handleLogout} />
-      {location.pathname === "/" && (
-        <div className="lg:w-[1400px] lg:mx-0 md:w-[768px] sm:w-[640px] text-center md:mt-20">
-          <HeroSection />
-          <Products user={user} />
+      {user.role === "admin" ? (
+        <div className="lg:w-[1400px] lg:mx-0 md:w-[768px] sm:w-[640px] text-center md:my-20">
+          <div className="flex justify-center">
+            <AdminUserHome />
+          </div>
         </div>
-      )}
-      {location.pathname !== "/" && (
-        <div className="lg:w-[1400px] md:w-[768px] sm:w-[640px] text-center md:mt-20">
-          <Outlet />
-        </div>
+      ) : (
+        <>
+          {location.pathname === "/" && (
+            <div className="lg:w-[1400px] lg:mx-0 md:w-[768px] sm:w-[640px] text-center md:mt-20">
+              <HeroSection />
+              <Products user={user} />
+            </div>
+          )}
+          {location.pathname !== "/" && (
+            <div className="lg:w-[1400px] md:w-[768px] sm:w-[640px] text-center md:mt-20">
+              <Outlet />
+            </div>
+          )}
+        </>
       )}
       <Footer />
     </div>

@@ -17,11 +17,14 @@ const Navbar = ({ user, handleLogout }) => {
           {user.id && (
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <span className="text-xl font-semibold">{user.name}</span>
-              <Link to="/cart" className="btn btn-ghost btn-circle">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.34 1.67M6 7h14M5 7h1m0 0L3.57 4.59a2 2 0 00-.91-.6L1 4m5 3v12a2 2 0 002 2h10a2 2 0 002-2V7m-7 6h2m-2 0h-2m2 0v6m0-6H8m4 0h4" />
-                </svg>
-              </Link>
+              {
+                user.role==="customer" && (
+                <Link to="/cart" className="btn btn-ghost btn-circle">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.34 1.67M6 7h14M5 7h1m0 0L3.57 4.59a2 2 0 00-.91-.6L1 4m5 3v12a2 2 0 002 2h10a2 2 0 002-2V7m-7 6h2m-2 0h-2m2 0v6m0-6H8m4 0h4" />
+                  </svg>
+                </Link>)
+              }
             </div>
           )}
           {user.id ? (
