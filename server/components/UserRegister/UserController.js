@@ -45,11 +45,61 @@ const UserController = {
         }
     },
 
-    // Get all users
+    // User login
+    loginUser: async (req, res) => {
+        const { email, password } = req.body;
+
+        try {
+            const user = await User.findOne({ email });
+            if (!user) {
+                return res.status(404).json({ error: "User not found" });
+            }
+
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                return res.status(401).json({ error: "Invalid credentials" });
+            }
+
+            const token = jwt.sign(
+                {
+                    id: user._id,
+                    name: user.username,
+                    email: user.email,
+                    role: user.role,
+                },
+                "your_jwt_secret",
+                { expiresIn: "1h" }
+            );
+
+            res.status(200).json({ message: "Login successful", token });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Server error" });
+        }
+    },
+
+    // Get all users with pagination and optional search
     getAllUsers: async (req, res) => {
         try {
-            const users = await User.find().select("-password"); // Exclude passwords
-            res.status(200).json(users);
+            const { page = 1, limit = 10, searchEmail = "" } = req.query;
+
+            const query = searchEmail
+                ? { email: { $regex: searchEmail, $options: "i" } } // Case-insensitive search
+                : {};
+
+            const users = await User.find(query)
+                .select("-password") // Exclude passwords
+                .skip((page - 1) * limit) // Skip records for pagination
+                .limit(parseInt(limit)); // Limit the number of records
+
+            const totalUsers = await User.countDocuments(query); // Get total count for pagination
+
+            res.status(200).json({
+                users,
+                totalUsers,
+                totalPages: Math.ceil(totalUsers / limit),
+                currentPage: parseInt(page),
+            });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Error fetching users" });
@@ -93,6 +143,23 @@ const UserController = {
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Error deleting user" });
+        }
+    },
+
+    // Get a specific user by ID
+    getUserById: async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const user = await User.findById(id).select("-password");
+            if (!user) {
+                return res.status(404).json({ error: "User not found" });
+            }
+
+            res.status(200).json(user);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Error fetching user" });
         }
     },
 };

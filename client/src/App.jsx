@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import Cart from "./pages/Cart"; // Import the Cart component
 import { useState, useEffect } from "react";
 import {jwtDecode} from "jwt-decode"; // Ensure proper import
+import ProductDetails from "./pages/ProductDetalis";
 
 const App = () => {
   const [user, setUser] = useState({
@@ -69,6 +70,10 @@ const App = () => {
         {
           path: "/cart", // Add cart route
           element: <Cart user={user} />,
+        },
+        {
+          path: "/productdetails/:id",
+          element: <ProductDetails user={user} />,
         },
       ],
     },

@@ -15,8 +15,6 @@ const Products = ({ user }) => {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
 
-  console.log("user is product:", user);
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -96,6 +94,7 @@ const Products = ({ user }) => {
               <ProductCardSeller
                 key={product._id}
                 product={product}
+                user = {user}
                 handleUpdateProduct={openUpdateModal}
                 handleDeleteProduct={handleDeleteProduct}
               >
